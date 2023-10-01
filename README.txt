@@ -31,3 +31,32 @@ Regiones de memoria flash: Estas regiones contienen el código de arranque y la 
 Regiones de memoria RAM: Estas regiones contienen la memoria RAM para el almacenamiento de datos.
 
 5. Los shadowed pointers del PSP y MSP son punteros a la pila de los modos Thread y Handler, respectivamente. Se utilizan para mejorar el rendimiento de las aplicaciones al evitar que el procesador tenga que cargar la pila desde la memoria principal. Los shadowed pointers del PSP y MSP almacenan la pila en una memoria especial llamada Shadow Register File (SRF). El SRF es una memoria de acceso rápido que se utiliza para almacenar los registros más utilizados del procesador.
+
+6. Los modos de privilegio y operación de los Cortex M son: Privileged Thread, Unprivileged Thread y Privileged Handler. 
+
+Cuando se programa un microcontrolador de la forma bare - metal (programación tradicional haciendo uso del bucle while(1) para ejecutar las distintas instrucciones) el modo de operación del uC es el de Privileged Thread, en el cual uno tiene acceso irrestricto a todos los recursos del uC, a todo el mapa de memoria, etcétera. Depende del programador hacer buen uso del uC. En este modo, al suceder una interrupción el microcontrolador pasa automáticamente al modo de ejecución Privileged Handler. 
+
+En cambio, al hacer uso de un RTOS, el modo de operación es el de Unprivileged Thread, en el cual los procesos tienen acceso restringido a recursos del uC, y al ocurrir una interrupción el uC pasa al modo Privileged Thread.  
+
+Un ejemplo de paso del modo privilegiado al no privilegiado y luego de nuevo al privilegiado podría ser el caso en el que un RTOS se encuentra atendiendo una interrupción o excepción, luego una vez finalizada retoma la ejecución no privilegiada, y cuando luego surga una nueva interrupción o excepción pasa nuevamente a modo privilegiado. 
+
+7. Un modelo de registros ortogonal es un modelo de arquitectura de computadoras en el que todas las instrucciones de la máquina pueden acceder a todos los registros disponibles con el mismo derecho. Esto implica que no existen restricciones en cuanto a qué registros pueden ser utilizados por qué instrucciones, o cómo se pueden utilizar.
+
+Un ejemplo de un modelo de registros ortogonal es el modelo de registros de la arquitectura RISC. En este modelo, todas las instrucciones tienen la misma longitud y formato, y cada registro puede ser utilizado por cualquier instrucción.
+
+8. Las instrucciones condicionales IT sirven para representar la famosa estructura if-then. Estas estructuras permiten que se verifique una condición y se ejecute la porción de código correspondiente en lugar de ejecutar bloques de código y saltos que retarden la ejecución del programa.
+
+Ejemplo:
+
+9. Las excepciones de los periféricos propios del core del procesador tendran mayor prioridad frente a posibles interrupciones externas. 
+
+Reset: tiene maxima prioridad. Esta excepción ocurre cuando el sistema se inicia o reinicia. Existe el soft-reset y hard-reset. En el caso del soft-reset unicamente se reinicia el stack pointer, mientras que en el hard-reset se reinicia todo el procesador a nivel alimentación.
+
+NMI: son interrupciones que requieren atención apenas suceden, como por ejemplo fallo en el sistema de clock.
+
+Hard Fault: La excepción Hard fault se produce cuando se produce un error grave en el sistema. Esta excepción puede ser causada por una variedad de factores, como una instrucción incorrecta, una división por cero o un acceso a memoria no válido.
+
+10. La pila sirve para almacenar los registros del procesador al suceder un llamado a una función. Además se utiliza para almacenar los parámetros de las funciones y lo que retornen. 
+
+Al pasar a la ejecución de una función, el procesador almacena los registros en la pila y salta a la dirección en la que se encuentre la función. Luego al retornar de la función almacena su valor de retorno en la pila y repone los registros del procesador para retomar la ejecución principal.
+
