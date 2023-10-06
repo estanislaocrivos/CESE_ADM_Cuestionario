@@ -46,8 +46,6 @@ Un ejemplo de un modelo de registros ortogonal es el modelo de registros de la a
 
 8. Las instrucciones condicionales IT sirven para representar la famosa estructura if-then. Estas estructuras permiten que se verifique una condición y se ejecute la porción de código correspondiente en lugar de ejecutar bloques de código y saltos que retarden la ejecución del programa.
 
-Ejemplo:
-
 9. Las excepciones de los periféricos propios del core del procesador tendran mayor prioridad frente a posibles interrupciones externas. 
 
 Reset: tiene maxima prioridad. Esta excepción ocurre cuando el sistema se inicia o reinicia. Existe el soft-reset y hard-reset. En el caso del soft-reset unicamente se reinicia el stack pointer, mientras que en el hard-reset se reinicia todo el procesador a nivel alimentación.
@@ -60,3 +58,34 @@ Hard Fault: La excepción Hard fault se produce cuando se produce un error grave
 
 Al pasar a la ejecución de una función, el procesador almacena los registros en la pila y salta a la dirección en la que se encuentre la función. Luego al retornar de la función almacena su valor de retorno en la pila y repone los registros del procesador para retomar la ejecución principal.
 
+11. El primer paso es la inicialización del Stack Pointer (SP) que apunta a la dirección de inicio de la pila. Luego, el Program Counter (PC) se configura para apuntar al vector de reset. El vector de reset es una dirección de memoria fija que contiene la dirección de inicio del programa principal después del reset. Una vez que el PC apunta al vector de reset, se inicia la ejecución del programa principal desde la dirección de memoria especificada en ese vector.
+
+12. Los Core Peripherals son los periféricos internos al núcleo del microprocesador y son escenciales para llevar a cabo las principales funciones del microprocesador. Une ejemplo de este tipo de periféricos es el NVIC (Nested Vector Interrupt Controller). Este es un controlador de interrupciones que gestiona las interrupciones del sistema y permite priorizar y controlar cómo se manejan las interrupciones en el microcontrolador. La diferencia de estos periféricos con los periféricos convencionales del uC es que estos últimos vienen a proveer funciones adicionales al uC pero que no son esenciales para su funcionamiento básico. Un periférico de este tipo puede considerarse la unidad de punto flotante por HW que integran los Cortex M4. 
+
+13. Las excepciones de los Core Peripherals siempre tendrán mayor prioridad que las interrupciones externas. Por ejemplo una excepción por Reset va a tener mucha mayor prioridad que una interrupción por un ADC del uC. 
+
+14. El CMSIS es una capa de abstracción de HW que corre en los Cortex M, con el objetivo de darle portabilidad al código entre distintos procesadores ARM Cortex. Brinda herramientas para que el core interactúe con los Core Peripherals y un RTOS.
+
+15. Al ocurrir una interrupción mientras el uC se encuentra en el modo de ejecución no privilegiado primero debe hacer un Stacking del estado del procesador en el momento en que ocurre la interrupción. Esto implica guardar el contenido de los registros y el contador de programa (PC) actual en una pila o en registros específicos de almacenamiento temporal. Luego, el microprocesador utiliza una tabla de vectores de interrupción o una dirección específica de memoria para determinar la dirección de inicio de la subrutina de interrupción correspondiente. Esta dirección se carga en el contador de programa (PC) del microprocesador. Después de que la subrutina de interrupción ha completado su trabajo, se restaura el estado del procesador al punto en el que se encontraba antes de la interrupción. Esto implica recuperar los registros y el PC del estado guardado previamente.
+
+16. La FPU generalmente tiene un registro de estado que controla y registra el estado actual de las operaciones de punto flotante, incluidas las banderas de estado (por ejemplo, bandera de cero, bandera de sobreflujo, etc.). Este registro de estado también se considera en la operación de stacking. Es decir, en este caso el stacking involucra más registros.
+
+17. El Tale Chaining es un proceso que se ejecuta cuando llega una interrupción en el momento en el que se esta ejecutando otra ISR. En este caso no se hace Context Switching. El Late Arrival se da cuando se esta ejecutando una ISR y surge una interrupción de mayor prioridad. 
+
+18. El SysTick es un temporizador de sistema (System Tick Timer) que se encuentra en muchos microcontroladores basados en la arquitectura ARM Cortex-M. Su implementación favorece la portabilidad de los sistemas operativos embebidos porque proporciona una fuente de temporización precisa y regular que se puede utilizar para generar interrupciones periódicas a intervalos regulares de tiempo. Esto es esencial para tareas como el control de tiempo en sistemas embebidos, programación de tareas periódicas y medición de intervalos de tiempo. Además este temporizador se encuentra en gran parte de los procesadores de la familia Cortex M lo cual facilita la portabilidad.
+
+19. La función principal de este módulo es proteger el acceso a memoria. Además, previene que las aplicaciones (tareas) accedan a zonas de memoria de otras aplicaciones o del kernel de un SO, que las aplicaciones accedan a periféricos sin los permisos adecuados o que se ejecute código desde zonas no permitidas (ejemplo desde la RAM).
+
+20. Se pueden proteger hasta 8 regiones. En la mayoría de los casos, si se configuran regiones que se solapan, se aplicarán los permisos de acceso más restrictivos. Es decir, si una dirección de memoria está cubierta por varias regiones, se aplicarán las restricciones más estrictas de entre esas regiones. Las zonas de memoria que no están cubiertas por ninguna región definida generalmente estarán sujetas a los permisos predeterminados o valores de acceso que establezca el hardware o el sistema operativo. 
+
+21. La excepción PendSV (Pendable Supervisor Call) se utiliza comúnmente en microprocesadores ARM Cortex-M. Su principal propósito es permitir la planificación de tareas en sistemas multitarea en tiempo real. Se relaciona con otras excepciones, como SysTick y las interrupciones de hardware, para proporcionar una gestión eficiente de tareas en sistemas embebidos.
+
+Supongamos un sistema embebido con un sistema operativo en tiempo real (RTOS) que administra múltiples tareas. El planificador de tareas decide que es el momento de cambiar de una tarea a otra para dar tiempo de ejecución a diferentes procesos. Se activa PendSV para realizar este cambio de contexto. Ejemplo:
+
+La tarea actual ha estado ejecutando durante un tiempo y el planificador de tareas decide que otra tarea debe ejecutarse a continuación.
+El planificador de tareas activa la excepción PendSV por software.
+PendSV se ejecuta en la prioridad más baja, y su código se encarga de guardar el contexto de la tarea actual en la pila de esa tarea.
+Luego, PendSV carga el contexto de la siguiente tarea que debe ejecutarse desde su pila.
+El sistema cambia de contexto y comienza a ejecutar la nueva tarea, que continúa su ejecución desde donde se detuvo la última vez.
+
+22. La excepción SVC (Supervisor Call) se utiliza en sistemas embebidos, especialmente en sistemas operativos en tiempo real (RTOS), para proporcionar una interfaz entre el código de la aplicación y el núcleo del sistema operativo. También se conoce como "syscall" o "trap" en otros contextos.
