@@ -1,8 +1,8 @@
 Arquitectura de Microprocesadores 
 
-CESE 2023_CO20
+CESE 2023_CO20 2do Bimestre
 
-Cuestionario de la materia
+Respuestas al cuestionario de la materia:
 
 1. A continuación se listan algunas características de los tres procesadores y sus principales diferencias:
 
@@ -18,11 +18,11 @@ Los Cortex M3 y M4 agregan varias funcionalidades con respecto al M0 como por ej
 
 Los procesadores M4 suelen ser utilizados en aplicaciones como el procesamiento de señales digitales, donde se requiere operar grandes cantidades de datos a partir de una única instrucción (SIMD) haciendo uso de operaciones MAC (Multiply and Accumulate).
 
-2. El set de instrucciones Thumb, al ser de 32 bits con respecto al set de ARM de 64 bits, permite que el código ocupe menos lugar en memoria. Este set se utiliza principalmente en aplicaciones en las que existe una restricción en el tamaño de la memoria y el ancho de banda del bus.
+2. El set de instrucciones Thumb, al ser de 16 bits con respecto al set de ARM de 32 bits, permite que el código ocupe menos lugar en memoria. Este set se utiliza principalmente en aplicaciones en las que existe una restricción en el tamaño de la memoria y el ancho de banda del bus.
 
-3. Las arquitecturas Load - Store son las arquitecturas que operan exclusivamente con datos que se encuentren en registros. Es decir que al traer un dato desde memoria lo almacenan de forma intermedia en un registro, luego las instrucciones operan entre datos de registros y luego almacenan el resultado en otro registro. Finalmente, se almacena el dato del registro en memoria a través de una instrucción dedicada.
+3. Las arquitecturas Load - Store son las arquitecturas que operan exclusivamente con datos que se encuentren en registros. Es decir que al traer un dato desde memoria lo almacenan de forma intermedia en un registro, luego las instrucciones operan entre datos de registros y luego almacenan el resultado en otro registro. Finalmente, se almacena el dato del registro en memoria a través de una instrucción dedicada. No permite operar directamente con datos en memoria.
 
-4. Regiones de memoria principal: Estas regiones contienen la memoria principal del sistema, que se utiliza para almacenar el código, los datos y la pila.
+4. Regiones de memoria principal: Estas regiones contienen la memoria principal del sistema, que se utiliza para almacenar el código, los deeos y la pila.
 
 Regiones de memoria periférica: Estas regiones contienen los registros y periféricos del procesador.
 
@@ -30,7 +30,7 @@ Regiones de memoria flash: Estas regiones contienen el código de arranque y la 
 
 Regiones de memoria RAM: Estas regiones contienen la memoria RAM para el almacenamiento de datos.
 
-5. Los shadowed pointers del PSP y MSP son punteros a la pila de los modos Thread y Handler, respectivamente. Se utilizan para mejorar el rendimiento de las aplicaciones al evitar que el procesador tenga que cargar la pila desde la memoria principal. Los shadowed pointers del PSP y MSP almacenan la pila en una memoria especial llamada Shadow Register File (SRF). El SRF es una memoria de acceso rápido que se utiliza para almacenar los registros más utilizados del procesador.
+5. Los shadowed pointers del PSP y MSP son punteros a la pila de los modos Thread y Handler, respectivamente. El hecho de tener separada la memoria del stack para un modo y otro trae una ventaja ya que permite un manejo optimizado del stack para los diversos procesos que corran en el uC.
 
 6. Los modos de privilegio y operación de los Cortex M son: Privileged Thread, Unprivileged Thread y Privileged Handler. 
 
@@ -40,13 +40,11 @@ En cambio, al hacer uso de un RTOS, el modo de operación es el de Unprivileged 
 
 Un ejemplo de paso del modo privilegiado al no privilegiado y luego de nuevo al privilegiado podría ser el caso en el que un RTOS se encuentra atendiendo una interrupción o excepción, luego una vez finalizada retoma la ejecución no privilegiada, y cuando luego surga una nueva interrupción o excepción pasa nuevamente a modo privilegiado. 
 
-7. Un modelo de registros ortogonal es un modelo de arquitectura de computadoras en el que todas las instrucciones de la máquina pueden acceder a todos los registros disponibles con el mismo derecho. Esto implica que no existen restricciones en cuanto a qué registros pueden ser utilizados por qué instrucciones, o cómo se pueden utilizar.
-
-Un ejemplo de un modelo de registros ortogonal es el modelo de registros de la arquitectura RISC. En este modelo, todas las instrucciones tienen la misma longitud y formato, y cada registro puede ser utilizado por cualquier instrucción.
+7. Un modelo de registros ortogonal es un modelo de arquitectura en el que todas las instrucciones de la máquina pueden acceder a todos los registros disponibles con el mismo derecho. Esto implica que no existen restricciones en cuanto a qué registros pueden ser utilizados por qué instrucciones, o cómo se pueden utilizar. En este caso, esto es válido para los registros r0 a r13. Existen instrucciones que tratan a r14 y r15 de manera diferente.
 
 8. Las instrucciones condicionales IT sirven para representar la famosa estructura if-then. Estas estructuras permiten que se verifique una condición y se ejecute la porción de código correspondiente en lugar de ejecutar bloques de código y saltos que retarden la ejecución del programa.
 
-9. Las excepciones de los periféricos propios del core del procesador tendran mayor prioridad frente a posibles interrupciones externas. 
+9. Las excepciones de los periféricos propios del core del procesador tendrán mayor prioridad frente a posibles interrupciones externas. 
 
 Reset: tiene maxima prioridad. Esta excepción ocurre cuando el sistema se inicia o reinicia. Existe el soft-reset y hard-reset. En el caso del soft-reset unicamente se reinicia el stack pointer, mientras que en el hard-reset se reinicia todo el procesador a nivel alimentación.
 
@@ -78,7 +76,7 @@ Al pasar a la ejecución de una función, el procesador almacena los registros e
 
 20. Se pueden proteger hasta 8 regiones. En la mayoría de los casos, si se configuran regiones que se solapan, se aplicarán los permisos de acceso más restrictivos. Es decir, si una dirección de memoria está cubierta por varias regiones, se aplicarán las restricciones más estrictas de entre esas regiones. Las zonas de memoria que no están cubiertas por ninguna región definida generalmente estarán sujetas a los permisos predeterminados o valores de acceso que establezca el hardware o el sistema operativo. 
 
-21. La excepción PendSV (Pendable Supervisor Call) se utiliza comúnmente en microprocesadores ARM Cortex-M. Su principal propósito es permitir la planificación de tareas en sistemas multitarea en tiempo real. Se relaciona con otras excepciones, como SysTick y las interrupciones de hardware, para proporcionar una gestión eficiente de tareas en sistemas embebidos.
+21. La excepción PendSV (Pendable Supervisor Call) se utiliza comúnmente en microprocesadores ARM Cortex-M. Su principal propósito es permitir el cambio de contexto en la ejecución de tareas en RTOS.
 
 Supongamos un sistema embebido con un sistema operativo en tiempo real (RTOS) que administra múltiples tareas. El planificador de tareas decide que es el momento de cambiar de una tarea a otra para dar tiempo de ejecución a diferentes procesos. Se activa PendSV para realizar este cambio de contexto. Ejemplo:
 
@@ -88,4 +86,16 @@ PendSV se ejecuta en la prioridad más baja, y su código se encarga de guardar 
 Luego, PendSV carga el contexto de la siguiente tarea que debe ejecutarse desde su pila.
 El sistema cambia de contexto y comienza a ejecutar la nueva tarea, que continúa su ejecución desde donde se detuvo la última vez.
 
-22. La excepción SVC (Supervisor Call) se utiliza en sistemas embebidos, especialmente en sistemas operativos en tiempo real (RTOS), para proporcionar una interfaz entre el código de la aplicación y el núcleo del sistema operativo. También se conoce como "syscall" o "trap" en otros contextos.
+22. La excepción SVC (Supervisor Call) se utiliza para proporcionar una interfaz entre el código de la aplicación y el núcleo del SO. Un RTOS puede utilizarla para acceder a los recursos del sistema desde una aplicación, como puede ser el driver de un periférico.
+
+ISA:
+
+1. Los sufijos en las instrucciones Assembly ARM son modificadores opcionales que se pueden agregar a las instrucciones para alterar su comportamiento o afectar los registros condicionales. Por ejemplo, existe el sufijo EQ el cual puede ser utilizado con la instrucción Branch para saltar si la bandera de EQUAL es puesta en alto (BEQ en este caso sería la instrucción con sufijo). Si se utilizara la instrucción CMP R1, R2 seguida de BEQ Loop, y resultara que R1=R2, entonces el programa saltará a la etiqueta Loop. Los sufijos también son de utilidad al momento de seleccionar el uso de instrucciones de 16 bit o 32 bits, o para actualizar el estado de los registros del APSR cuando se ejecuta una instrucción (ver siguiente rta.).
+
+2. El sufijo 's' obliga a que luego de ejecutar una dada instrucción se actualicen los flags del APSR. Estos flags pueden ser de utilidad para controlar el flujo del programa. Un ejemplo sería el uso de la instrucción MOV y MOVS. En el segundo caso se actualizan los flags al ejecutar, por ejemplo, la copia de un valor a un registro. 
+
+3. Las instrucciones ASM de aritmética saturada evitan que se produzca overflow al ejecutar operaciones, manteniendo los resultados en un rango válido según la representación numérica que se utilice. Al ejecutar una suma entre dos enteros cuyo resultado supere +-127 (para 8 bits signados) el ensamblador devolverá el máximo valor admisible por la representación. Por ejemplo, la linea SSAT R1, #8, R0 mueve el contenido de R0 a R1 saturando el valor en 8 bits.
+
+4. Para hacer correr funciones de ASM en un compilador C, estas deben implementarse en un archivo .S. Estas funciones pueden tomar hasta 4 parámetros siendo llamadas desde el compilador C. Cada uno de estos parámetros serán almacenados en R0...R3 en ASM. Si se necesitaran usar más registros intermedios en la función, es posible utilizar los registros R4...R12, aunque en ese caso es necesario que se haga el PUSH y POP de estos registros al principio y al final de la función. Si la función devolviera algún parámetro, lo puede devolver a través del registro R0.
+
+5. Las instrucciones SIMD (Single Instruction Multiple Data) suelen ser utilizadas al momento de procesar grandes cantidades de datos vectorizados o matriciales, en un mismo ciclo de reloj. Este tipo de operaciones son comunes en aplicaciones donde se requieren procesar señales (DSP para audio, etc.). Un ejemplo de este tipo de instrucciones es QADD16. Por ejemplo, si hay dos registros SIMD Q0 y Q1, cada uno conteniendo múltiples elementos de 16 bits, se puede usar QADD16 para realizar una suma saturada por pares de elementos entre los dos registros y almacenar el resultado en un tercer registro, como Q2.
